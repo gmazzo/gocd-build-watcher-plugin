@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<go-plugin id="policeman.notifier" version="1">
+    <about>
+        <name>@project.name@</name>
+        <version>@project.version@</version>
+        <target-go-version>@go.version@</target-go-version>
+        <description>@project.description@</description>
+        <vendor>
+            <name>@author@</name>
+            <url>@repo.url@</url>
+        </vendor>
+    </about>
+</go-plugin>

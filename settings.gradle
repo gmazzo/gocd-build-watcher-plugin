@@ -1,0 +1,3 @@
+include ':plugin'
+
+project(':plugin').name = 'policeman-plugin'

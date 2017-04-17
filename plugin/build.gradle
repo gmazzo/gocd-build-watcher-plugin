@@ -1,0 +1,87 @@
+import org.apache.tools.ant.filters.*
+
+apply plugin: 'java'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+
+def goVersion = '16.3.0'
+
+def repoName = 'gocd-policeman-plugin'
+def repoDesc = 'A plugin which sends direct emails and slack messages to the person who brakes a build'
+def repoUrl = "https://github.com/gmazzo/$repoName"
+def repoTags = ['go', 'go-cd', 'plugin', 'slack', 'email']
+
+dependencies {
+    compile 'com.github.seratch:jslack:1.0.8'
+
+    compileOnly "cd.go.plugin:go-plugin-api:$goVersion"
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.slf4j:slf4j-simple:1.7.22'
+}
+
+processResources {
+    filter ReplaceTokens, tokens: [
+            'project.name': 'Policeman Notification Plugin',
+            'project.description': repoDesc,
+            'project.version': project.version,
+            'repo.url': repoUrl.toString(),
+            'author': 'Guillermo Mazzola',
+            'go.version': goVersion
+    ]
+}
+
+jar {
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+test {
+    testLogging.showStandardStreams = true
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = repoName
+        desc = repoDesc
+        vcsUrl = "${repoUrl}.git"
+        githubRepo = repoUrl.replaceFirst('\\Qhttps://github.com/\\E', '');
+        githubReleaseNotesFile = 'README.md'
+        licenses = ['Public Domain']
+        labels = repoTags
+        publicDownloadNumbers = true
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                name repoDesc
+                url repoUrl
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
