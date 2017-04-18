@@ -22,6 +22,7 @@ dependencies {
 
 processResources {
     filter ReplaceTokens, tokens: [
+            'plugin.id': 'policeman.notifier',
             'project.name': 'Policeman Notification Plugin',
             'project.description': repoDesc,
             'project.version': project.version,

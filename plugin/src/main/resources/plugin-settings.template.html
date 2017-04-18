@@ -1,0 +1,36 @@
+<style>
+
+    fieldset {
+        padding: 10px;
+    }
+
+    fieldset label {
+        font-weight: bold;
+    }
+
+</style>
+<div class="form_item_block">
+    <label>Server Base URL:</label>
+    <input type="text" ng-model="server_base_url" ng-required="false"/>
+    <span class="form_error" ng-show="GOINPUTNAME[server_base_url].$error.server">{{ GOINPUTNAME[server_base_url].$error.server }}</span>
+</div>
+<fieldset class="form_item_block"><label>Slack</label>
+    <div class="form_item_block">
+        <label>OAuth Access Token:<span class="asterisk">*</span></label>
+        <input type="text" ng-model="slack_api_token" ng-required="true"/>
+        <span class="form_error" ng-show="GOINPUTNAME[slack_api_token].$error.server">{{ GOINPUTNAME[slack_api_token].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>Channel (none for direct messages):</label>
+        <input type="text" ng-model="slack_channel" ng-required="false" placeholder="#general"/>
+        <span class="form_error" ng-show="GOINPUTNAME[slack_channel].$error.server">{{ GOINPUTNAME[slack_channel].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>Bot username:</label>
+        <input type="text" ng-model="slack_bot_username" ng-required="false" placeholder="gocd"/>
+        <span class="form_error" ng-show="GOINPUTNAME[slack_bot_username].$error.server">{{ GOINPUTNAME[slack_bot_username].$error.server }}</span>
+    </div>
+</fieldset>
+<br/>
+<fieldset class="form_item_block"><label>Email</label>
+</fieldset>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<go-plugin id="policeman.notifier" version="1">
+<go-plugin id="@plugin.id@" version="1">
     <about>
         <name>@project.name@</name>
         <version>@project.version@</version>
