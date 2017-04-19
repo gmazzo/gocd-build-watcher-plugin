@@ -17,7 +17,7 @@
 <fieldset class="form_item_block">
     <label>Slack</label>
     <div class="form_item_block">
-        <input type="submit" value="Install Slack App" onclick="window.open('https://gmazzo-dev.slack.com/apps/A50RLMPGD-gocd-build-watcher'); return false;" />
+        <a href="https://slack.com/oauth/authorize?&client_id=170776918258.170870737557&scope=chat:write:bot,users:read.email,users:read"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
     </div>
     <div class="form_item_block">
         <label>OAuth Access Token:<span class="asterisk">*</span></label>
@@ -73,5 +73,34 @@
         <input type="text" ng-model="email_cc" ng-required="false"/>
         <span class="form_error" ng-show="GOINPUTNAME[email_cc].$error.server">{{ GOINPUTNAME[email_cc].$error.server }}</span>
         use ',' for multiple destinations
+    </div>
+</fieldset>
+<fieldset class="form_item_block">
+    <label>Messages</label>
+    <div class="form_item_block">
+        <label>Pipeline Broken:<span class="asterisk">*</span></label>
+        <input type="text" ng-model="message_pipe_broken" ng-required="true"/>
+        <span class="form_error" ng-show="GOINPUTNAME[message_pipe_broken].$error.server">{{ GOINPUTNAME[message_pipe_broken].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>Pipeline Still Broken:<span class="asterisk">*</span></label>
+        <input type="text" ng-model="message_pipe_still_broken" ng-required="true"/>
+        <span class="form_error" ng-show="GOINPUTNAME[message_pipe_still_broken].$error.server">{{ GOINPUTNAME[message_pipe_still_broken].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>Pipeline Fixed:<span class="asterisk">*</span></label>
+        <input type="text" ng-model="message_pipe_fixed" ng-required="true"/>
+        <span class="form_error" ng-show="GOINPUTNAME[message_pipe_fixed].$error.server">{{ GOINPUTNAME[message_pipe_fixed].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>You can use the following placeholders in the message:</label>
+        <label><code>@user@</code>: the last commit username in the material</label>
+        <label><code>@pipeline@</code>: the pipeline name</label>
+        <label><code>@pipeline-counter@</code>: the pipeline current run counter</label>
+        <label><code>@stage@</code>: the stage name</label>
+        <label><code>@stage-counter@</code>: the stage current run counter</label>
+        <label><code>@label@</code>: the current run label</label>
+        <label><code>@current-state@</code>: the current run state</label>
+        <label><code>@previous-state@</code>: the previous run state</label>
     </div>
 </fieldset>

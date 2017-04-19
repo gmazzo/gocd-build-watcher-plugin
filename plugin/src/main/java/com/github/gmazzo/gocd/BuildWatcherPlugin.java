@@ -30,6 +30,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_LABEL;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_PIPELINE;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_PIPELINE_COUNTER;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_STAGE;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_STAGE_COUNTER;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_STATE_CURRENT;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_STATE_PREVIOUS;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_USER;
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_AUTH_PASSWORD;
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_AUTH_USER;
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_CC;
@@ -37,6 +45,9 @@ import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_FROM
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_SMTP_PORT;
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_SMTP_SERVER;
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_SMTP_SSL;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_MESSAGE_PIPE_BROKEN;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_MESSAGE_PIPE_FIXED;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_MESSAGE_PIPE_STILL_BROKEN;
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SERVER_BASE_URL;
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SLACK_API_TOKEN;
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SLACK_BOT_USERNAME;
@@ -52,7 +63,6 @@ import static com.github.gmazzo.utils.StringUtils.isBlank;
 public class BuildWatcherPlugin implements GoPlugin {
     private static final Logger LOGGER = Logger.getLoggerFor(BuildWatcherPlugin.class);
     private static final String GO_BASE_URL = "http://localhost:8153/go/api";
-    private static final String USER_PLACEHOLDER = "%user%";
     private final Gson gson = new Gson();
     private GoApplicationAccessor accessor;
 
@@ -75,27 +85,44 @@ public class BuildWatcherPlugin implements GoPlugin {
                 return response(map("notifications", Collections.singletonList("stage-status")));
 
             case "go.plugin-settings.get-configuration":
+                PluginSettings defaults = new PluginSettings();
                 return response(map(
-                        SETTING_SERVER_BASE_URL, configItem("Server Base URL", "", false, false),
-                        SETTING_SLACK_API_TOKEN, configItem("Slack API Token", "]", true, true),
-                        SETTING_SLACK_CHANNEL, configItem("Slack Channel", "#general", false, false),
-                        SETTING_SLACK_BOT_USERNAME, configItem("Slack Bot Username", "", false, false),
-                        SETTING_EMAIL_SMTP_SERVER, configItem("Email SMTP Server", "smtp.gmail.com", true, false),
-                        SETTING_EMAIL_SMTP_PORT, configItem("Email SMTP Port", "465", true, false),
-                        SETTING_EMAIL_SMTP_SSL, configItem("Email SMTP SSL", "true", true, false),
-                        SETTING_EMAIL_AUTH_USER, configItem("Email SMTP Authentication Username", "", false, false),
-                        SETTING_EMAIL_AUTH_PASSWORD, configItem("Email SMTP Authentication Password", "", false, true),
-                        SETTING_EMAIL_FROM, configItem("Email From", "", true, false),
-                        SETTING_EMAIL_CC, configItem("Email CC", "", false, false)));
+                        SETTING_SERVER_BASE_URL, configItem("Server Base URL", defaults.serverBaseUrl, false, false),
+                        SETTING_SLACK_API_TOKEN, configItem("Slack API Token", defaults.slackAPIToken, true, true),
+                        SETTING_SLACK_CHANNEL, configItem("Slack Channel", defaults.slackChannel, false, false),
+                        SETTING_SLACK_BOT_USERNAME, configItem("Slack Bot Username", defaults.slackBotUsername, false, false),
+                        SETTING_EMAIL_SMTP_SERVER, configItem("Email SMTP Server", defaults.emailSMTPServer, true, false),
+                        SETTING_EMAIL_SMTP_PORT, configItem("Email SMTP Port", String.valueOf(defaults.emailSMTPPort), true, false),
+                        SETTING_EMAIL_SMTP_SSL, configItem("Email SMTP SSL", String.valueOf(defaults.emailSMTPSSL), true, false),
+                        SETTING_EMAIL_AUTH_USER, configItem("Email SMTP Authentication Username", defaults.emailAuthUser, false, false),
+                        SETTING_EMAIL_AUTH_PASSWORD, configItem("Email SMTP Authentication Password", defaults.emailAuthPassword, false, true),
+                        SETTING_EMAIL_FROM, configItem("Email From", defaults.emailFrom, true, false),
+                        SETTING_EMAIL_CC, configItem("Email CC", defaults.emailCC, false, false),
+                        SETTING_MESSAGE_PIPE_BROKEN, configItem("Message Pipeline Broken", defaults.messagePipeBroken, true, false),
+                        SETTING_MESSAGE_PIPE_STILL_BROKEN, configItem("Message Pipeline Still Broken", defaults.messagePipeStillBroken, true, false),
+                        SETTING_MESSAGE_PIPE_FIXED, configItem("Message Pipeline Fixed", defaults.messagePipeFixed, true, false)));
 
             case "go.plugin-settings.validate-configuration":
                 ValidateConfiguration configuration = gson.fromJson(requestMessage.requestBody(), ValidateConfiguration.class);
 
                 List<Map<String, String>> errors = new LinkedList<>();
-                if (isBlank(configuration.get(SETTING_SLACK_API_TOKEN))) {
-                    errors.add(map("key", SETTING_SLACK_API_TOKEN, "message", "Slack API Token not specified"));
+
+                // Messages validation
+                if (isBlank(configuration.get(SETTING_MESSAGE_PIPE_BROKEN))) {
+                    errors.add(map("key", SETTING_MESSAGE_PIPE_BROKEN, "message", "This message is required"));
                 }
-                // TODO validate whole data here
+                if (isBlank(configuration.get(SETTING_MESSAGE_PIPE_STILL_BROKEN))) {
+                    errors.add(map("key", SETTING_MESSAGE_PIPE_STILL_BROKEN, "message", "This message is required"));
+                }
+                if (isBlank(configuration.get(SETTING_MESSAGE_PIPE_FIXED))) {
+                    errors.add(map("key", SETTING_MESSAGE_PIPE_FIXED, "message", "This message is required"));
+                }
+
+                // Email validation
+                if (!isBlank(configuration.get(SETTING_EMAIL_SMTP_SERVER)) && !isBlank(configuration.get(SETTING_EMAIL_SMTP_PORT))) {
+                    errors.add(map("key", SETTING_EMAIL_SMTP_PORT, "message", "The field From is required"));
+                }
+
                 return response(errors);
 
             case "go.plugin-settings.get-view":
@@ -140,13 +167,23 @@ public class BuildWatcherPlugin implements GoPlugin {
             StageResult previousResult = getPreviousStageResult(previousInstance, pipeline.stage.name);
             String userEmail = getMaterialUser(currentInstance);
             String changesResume = getChangesResume(currentInstance);
-            Message message = getMessage(settings, pipeline, userEmail, currentResult, previousResult, changesResume);
+            Message message = getMessage(settings, userEmail, pipeline, currentResult, previousResult, changesResume);
 
             LOGGER.info("handleStageStatus: userEmail=" + userEmail + ", current=" + currentResult +
                     ", previous=" + previousResult + ", message=" + message);
 
             if (message != null) {
-                getNotifiers(settings).forEach(n -> n.sendMessage(userEmail, message));
+                // sends the notification
+                getNotifiers(settings).forEach(n -> {
+                    try {
+                        n.sendMessage(userEmail, message);
+
+                    } catch (Exception e) {
+                        LOGGER.error("sendMessage failed: notifier=" + n +
+                                ", userEmail=" + userEmail + ", current=" + currentResult +
+                                ", previous=" + previousResult + ", message=" + message);
+                    }
+                });
             }
 
         } else {
@@ -191,23 +228,22 @@ public class BuildWatcherPlugin implements GoPlugin {
                 .collect(Collectors.joining("\n\n"));
     }
 
-    private Message getMessage(PluginSettings settings, StageStatus.Pipeline pipeline, String userEmail, StageResult current, StageResult previous, String changesResume) {
-        String id = pipeline.name + '/' + pipeline.counter + '/' + pipeline.stage.name + '/' + pipeline.stage.counter;
-        String text = null;
+    private Message getMessage(PluginSettings settings, String userEmail, StageStatus.Pipeline pipeline, StageResult current, StageResult previous, String changesResume) {
+        String message = null;
         String link = null;
         Message.Type type = null;
 
         if (previous.isSucceed() && !current.isSucceed()) {
-            text = "Hello " + USER_PLACEHOLDER + ", you have broken the build on pipeline " + id;
+            message = settings.messagePipeBroken;
             type = Message.Type.BAD;
 
         } else if (!previous.isSucceed()) {
             if (current.isSucceed()) {
-                text = "Great job " + USER_PLACEHOLDER + "! The pipeline " + id + " has been fixed";
+                message = settings.messagePipeFixed;
                 type = Message.Type.GOOD;
 
             } else {
-                text = "Hello " + USER_PLACEHOLDER + ", the pipeline " + id + " is still broken";
+                message = settings.messagePipeStillBroken;
                 type = Message.Type.BAD;
             }
         }
@@ -216,16 +252,28 @@ public class BuildWatcherPlugin implements GoPlugin {
                     "/pipelines/" + pipeline.name + '/' + pipeline.counter +
                     '/' + pipeline.stage.name + '/' + pipeline.stage.counter;
         }
-        return text == null ? null : new Message.Builder()
-                .text(text.replaceAll(USER_PLACEHOLDER, userEmail))
-                .link(link)
-                .type(type)
-                .tag("Pipeline", pipeline.name + '/' + pipeline.counter)
-                .tag("Stage", pipeline.stage.name + '/' + pipeline.stage.counter)
-                .tag("Label", pipeline.label)
-                .tag("Status", capitalize(current.name()))
-                .longTag("Changes", changesResume)
-                .build();
+        if (message != null) {
+            String text = message.replaceAll(PLACEHOLDER_USER, userEmail)
+                    .replaceAll(PLACEHOLDER_PIPELINE, pipeline.name)
+                    .replaceAll(PLACEHOLDER_PIPELINE_COUNTER, String.valueOf(pipeline.counter))
+                    .replaceAll(PLACEHOLDER_STAGE, pipeline.stage.name)
+                    .replaceAll(PLACEHOLDER_STAGE_COUNTER, String.valueOf(pipeline.stage.counter))
+                    .replaceAll(PLACEHOLDER_LABEL, pipeline.label)
+                    .replaceAll(PLACEHOLDER_STATE_CURRENT, current.name())
+                    .replaceAll(PLACEHOLDER_STATE_PREVIOUS, previous.name());
+
+            return new Message.Builder()
+                    .text(text)
+                    .link(link)
+                    .type(type)
+                    .tag("Pipeline", pipeline.name + '/' + pipeline.counter)
+                    .tag("Stage", pipeline.stage.name + '/' + pipeline.stage.counter)
+                    .tag("Label", pipeline.label)
+                    .tag("Status", capitalize(current.name()))
+                    .longTag("Changes", changesResume)
+                    .build();
+        }
+        return null;
     }
 
     private List<Notifier> getNotifiers(PluginSettings settings) {
@@ -236,7 +284,7 @@ public class BuildWatcherPlugin implements GoPlugin {
                 notifs.add(new SlackNotifier(settings.slackAPIToken, settings.slackChannel, settings.slackBotUsername));
             }
 
-            if (!isBlank(settings.emailSMTPServer)) {
+            if (!isBlank(settings.emailSMTPServer) && !isBlank(settings.emailFrom)) {
                 notifs.add(new EmailNotifier(settings.emailSMTPServer, settings.emailSMTPPort, settings.emailAuthUser,
                         settings.emailAuthPassword, settings.emailSMTPSSL, settings.emailFrom, settings.emailCC));
             }
