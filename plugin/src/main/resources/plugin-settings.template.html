@@ -21,7 +21,7 @@
     </div>
     <div class="form_item_block">
         <label>OAuth Access Token:<span class="asterisk">*</span></label>
-        <input type="text" ng-model="slack_api_token" ng-required="true"/>
+        <input type="password" ng-model="slack_api_token" ng-required="true"/>
         <span class="form_error" ng-show="GOINPUTNAME[slack_api_token].$error.server">{{ GOINPUTNAME[slack_api_token].$error.server }}</span>
     </div>
     <div class="form_item_block">
@@ -37,4 +37,41 @@
 </fieldset>
 <br/>
 <fieldset class="form_item_block"><label>Email</label>
+    <div class="form_item_block">
+        <label>SMTP server:<span class="asterisk">*</span></label>
+        <input type="text" ng-model="email_smtp_server" ng-required="true" placeholder="smtp.gmail.com"/>
+        <span class="form_error" ng-show="GOINPUTNAME[email_smtp_server].$error.server">{{ GOINPUTNAME[email_smtp_server].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>SMTP port:<span class="asterisk">*</span></label>
+        <input type="text" ng-model="email_smtp_port" ng-required="true" placeholder="465"/>
+        <span class="form_error" ng-show="GOINPUTNAME[email_smtp_port].$error.server">{{ GOINPUTNAME[email_smtp_port].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>Use SSL:<span class="asterisk">*</span></label>
+        <input type="radio" ng-model="email_smtp_ssl" value="true" checked="checked"/> Yes
+        <input type="radio" ng-model="email_smtp_ssl" value="false"/> No
+        <span class="form_error" ng-show="GOINPUTNAME[email_smtp_ssl].$error.server">{{ GOINPUTNAME[email_smtp_ssl].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>Authentication Username:</label>
+        <input type="text" ng-model="email_auth_user" ng-required="false"/>
+        <span class="form_error" ng-show="GOINPUTNAME[email_auth_user].$error.server">{{ GOINPUTNAME[email_auth_user].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>Authentication Password:</label>
+        <input type="password" ng-model="email_auth_password" ng-required="false"/>
+        <span class="form_error" ng-show="GOINPUTNAME[email_auth_password].$error.server">{{ GOINPUTNAME[email_auth_password].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>From:<span class="asterisk">*</span></label>
+        <input type="text" ng-model="email_from" ng-required="true"/>
+        <span class="form_error" ng-show="GOINPUTNAME[email_from].$error.server">{{ GOINPUTNAME[email_from].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>CCs:</label>
+        <input type="text" ng-model="email_cc" ng-required="false"/>
+        <span class="form_error" ng-show="GOINPUTNAME[email_cc].$error.server">{{ GOINPUTNAME[email_cc].$error.server }}</span>
+        use ',' for multiple destinations
+    </div>
 </fieldset>

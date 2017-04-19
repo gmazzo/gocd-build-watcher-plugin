@@ -7,12 +7,14 @@ apply plugin: 'com.github.dcendents.android-maven'
 def goVersion = '16.3.0'
 
 def repoName = 'gocd-build-watcher-plugin'
-def repoDesc = 'A plugin which sends direct emails and slack messages to the person who brakes a build'
+def repoDesc = 'A plugin which sends direct emails and Slack messages to the person who brakes a build'
 def repoUrl = "https://github.com/gmazzo/$repoName"
 def repoTags = ['go', 'go-cd', 'plugin', 'slack', 'email']
 
 dependencies {
     compile 'com.github.seratch:jslack:1.0.8'
+    compile 'org.apache.commons:commons-email:1.4'
+    compile 'org.apache.commons:commons-lang3:3.5'
 
     compileOnly "cd.go.plugin:go-plugin-api:$goVersion"
 

@@ -1,5 +1,6 @@
 package com.github.gmazzo.gocd;
 
+import com.github.gmazzo.gocd.email.EmailNotifier;
 import com.github.gmazzo.gocd.model.Message;
 import com.github.gmazzo.gocd.model.api.PipelineInstance;
 import com.github.gmazzo.gocd.model.api.PluginSettings;
@@ -29,6 +30,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_AUTH_PASSWORD;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_AUTH_USER;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_CC;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_FROM;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_SMTP_PORT;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_SMTP_SERVER;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_SMTP_SSL;
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SERVER_BASE_URL;
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SLACK_API_TOKEN;
 import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SLACK_BOT_USERNAME;
@@ -68,10 +76,17 @@ public class BuildWatcherPlugin implements GoPlugin {
 
             case "go.plugin-settings.get-configuration":
                 return response(map(
-                        SETTING_SERVER_BASE_URL, configItem("Server Base URL", "The server base URL", false, false),
-                        SETTING_SLACK_API_TOKEN, configItem("Slack API Token", "The API OAuth token for Slack API", true, true),
-                        SETTING_SLACK_CHANNEL, configItem("Slack Channel", "The slack target channel", false, false),
-                        SETTING_SLACK_BOT_USERNAME, configItem("Slack Bot Username", "The slack bot username", false, false)));
+                        SETTING_SERVER_BASE_URL, configItem("Server Base URL", "", false, false),
+                        SETTING_SLACK_API_TOKEN, configItem("Slack API Token", "]", true, true),
+                        SETTING_SLACK_CHANNEL, configItem("Slack Channel", "#general", false, false),
+                        SETTING_SLACK_BOT_USERNAME, configItem("Slack Bot Username", "", false, false),
+                        SETTING_EMAIL_SMTP_SERVER, configItem("Email SMTP Server", "smtp.gmail.com", true, false),
+                        SETTING_EMAIL_SMTP_PORT, configItem("Email SMTP Port", "465", true, false),
+                        SETTING_EMAIL_SMTP_SSL, configItem("Email SMTP SSL", "true", true, false),
+                        SETTING_EMAIL_AUTH_USER, configItem("Email SMTP Authentication Username", "", false, false),
+                        SETTING_EMAIL_AUTH_PASSWORD, configItem("Email SMTP Authentication Password", "", false, true),
+                        SETTING_EMAIL_FROM, configItem("Email From", "", true, false),
+                        SETTING_EMAIL_CC, configItem("Email CC", "", false, false)));
 
             case "go.plugin-settings.validate-configuration":
                 ValidateConfiguration configuration = gson.fromJson(requestMessage.requestBody(), ValidateConfiguration.class);
@@ -80,6 +95,7 @@ public class BuildWatcherPlugin implements GoPlugin {
                 if (isBlank(configuration.get(SETTING_SLACK_API_TOKEN))) {
                     errors.add(map("key", SETTING_SLACK_API_TOKEN, "message", "Slack API Token not specified"));
                 }
+                // TODO validate whole data here
                 return response(errors);
 
             case "go.plugin-settings.get-view":
@@ -215,9 +231,16 @@ public class BuildWatcherPlugin implements GoPlugin {
     private List<Notifier> getNotifiers(PluginSettings settings) {
         if (accessor != null) {
             List<Notifier> notifs = new ArrayList<>(2);
+
             if (!isBlank(settings.slackAPIToken)) {
                 notifs.add(new SlackNotifier(settings.slackAPIToken, settings.slackChannel, settings.slackBotUsername));
             }
+
+            if (!isBlank(settings.emailSMTPServer)) {
+                notifs.add(new EmailNotifier(settings.emailSMTPServer, settings.emailSMTPPort, settings.emailAuthUser,
+                        settings.emailAuthPassword, settings.emailSMTPSSL, settings.emailFrom, settings.emailCC));
+            }
+
             return notifs;
         }
         return Collections.emptyList();
