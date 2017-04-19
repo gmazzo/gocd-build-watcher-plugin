@@ -6,7 +6,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 def goVersion = '16.3.0'
 
-def repoName = 'gocd-policeman-plugin'
+def repoName = 'gocd-build-watcher-plugin'
 def repoDesc = 'A plugin which sends direct emails and slack messages to the person who brakes a build'
 def repoUrl = "https://github.com/gmazzo/$repoName"
 def repoTags = ['go', 'go-cd', 'plugin', 'slack', 'email']
@@ -22,8 +22,8 @@ dependencies {
 
 processResources {
     filter ReplaceTokens, tokens: [
-            'plugin.id': 'policeman.notifier',
-            'project.name': 'Policeman Notification Plugin',
+            'plugin.id': 'build-watcher.notifier',
+            'project.name': 'Build-Watcher Notification Plugin',
             'project.description': repoDesc,
             'project.version': project.version,
             'repo.url': repoUrl.toString(),

@@ -1,4 +1,4 @@
-package com.github.gmazzo.gocd.model;
+package com.github.gmazzo.gocd.model.api;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -18,9 +18,6 @@ public class StageStatus {
         @SerializedName("label")
         public String label;
 
-        @SerializedName("group")
-        public String group;
-
         @SerializedName("stage")
         public Stage stage;
 
@@ -34,11 +31,8 @@ public class StageStatus {
         @SerializedName("counter")
         public int counter;
 
-        @SerializedName("state")
-        public String state;
-
         @SerializedName("result")
-        public String result;
+        public StageResult result;
 
     }
 

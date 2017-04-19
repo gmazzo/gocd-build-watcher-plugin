@@ -1,4 +1,4 @@
-package com.github.gmazzo.gocd.model;
+package com.github.gmazzo.gocd.model.api;
 
 import com.google.gson.annotations.SerializedName;
 

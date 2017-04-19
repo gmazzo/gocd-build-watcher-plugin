@@ -4,7 +4,7 @@
         padding: 10px;
     }
 
-    fieldset label {
+    fieldset > label {
         font-weight: bold;
     }
 
@@ -14,7 +14,11 @@
     <input type="text" ng-model="server_base_url" ng-required="false"/>
     <span class="form_error" ng-show="GOINPUTNAME[server_base_url].$error.server">{{ GOINPUTNAME[server_base_url].$error.server }}</span>
 </div>
-<fieldset class="form_item_block"><label>Slack</label>
+<fieldset class="form_item_block">
+    <label>Slack</label>
+    <div class="form_item_block">
+        <input type="submit" value="Install Slack App" onclick="window.open('https://gmazzo-dev.slack.com/apps/A50RLMPGD-gocd-build-watcher'); return false;" />
+    </div>
     <div class="form_item_block">
         <label>OAuth Access Token:<span class="asterisk">*</span></label>
         <input type="text" ng-model="slack_api_token" ng-required="true"/>
@@ -27,7 +31,7 @@
     </div>
     <div class="form_item_block">
         <label>Bot username:</label>
-        <input type="text" ng-model="slack_bot_username" ng-required="false" placeholder="gocd"/>
+        <input type="text" ng-model="slack_bot_username" ng-required="false"/>
         <span class="form_error" ng-show="GOINPUTNAME[slack_bot_username].$error.server">{{ GOINPUTNAME[slack_bot_username].$error.server }}</span>
     </div>
 </fieldset>
