@@ -14,6 +14,16 @@
     <input type="text" ng-model="server_base_url" ng-required="false"/>
     <span class="form_error" ng-show="GOINPUTNAME[server_base_url].$error.server">{{ GOINPUTNAME[server_base_url].$error.server }}</span>
 </div>
+<div class="form_item_block">
+    <label>Server API Username:<span class="asterisk">*</span></label>
+    <input type="text" ng-model="server_api_username" ng-required="true"/>
+    <span class="form_error" ng-show="GOINPUTNAME[server_api_username].$error.server">{{ GOINPUTNAME[server_api_username].$error.server }}</span>
+</div>
+<div class="form_item_block">
+    <label>Server API Password:<span class="asterisk">*</span></label>
+    <input type="password" ng-model="server_api_password" ng-required="true"/>
+    <span class="form_error" ng-show="GOINPUTNAME[server_api_password].$error.server">{{ GOINPUTNAME[server_api_password].$error.server }}</span>
+</div>
 <fieldset class="form_item_block">
     <label>Slack</label>
     <div class="form_item_block">
@@ -77,6 +87,7 @@
         use ',' for multiple destinations
     </div>
 </fieldset>
+<br/>
 <fieldset class="form_item_block">
     <label>Messages</label>
     <div class="form_item_block">

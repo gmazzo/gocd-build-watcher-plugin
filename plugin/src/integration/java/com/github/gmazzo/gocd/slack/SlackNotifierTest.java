@@ -19,8 +19,8 @@ public class SlackNotifierTest {
 
         assertNotNull("Missing SLACK_API_TOKEN environment variable!", token);
 
-        directNotifier = new SlackNotifier(token, null, null);
-        channelNotifier = new SlackNotifier(token, "#random", null);
+        directNotifier = new SlackNotifier(token, null, null, null);
+        channelNotifier = new SlackNotifier(token, "#random", null, null);
     }
 
     @Test

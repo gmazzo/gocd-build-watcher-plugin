@@ -8,6 +8,11 @@ A GoCD notification plugin which sends direct emails and Slack messages to the p
 1. Restart Go Server
 
 ## Configuration
+
+### Access Go Server API
+This plugin requires access to Go API to fetch status of previous job execution and material changes.
+If you are enforced to login before you can access the main pipelines screen, you need to provide a valid user/password to our plugin.
+
 ### Adding Slack notifications
 As this pluging needs to resolve user's email into a Slack ID, a *WebHook* is not enough to work.
 You need to install our Slack App into your team and get an API token.

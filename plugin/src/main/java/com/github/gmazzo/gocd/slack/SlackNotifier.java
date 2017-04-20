@@ -23,11 +23,13 @@ public class SlackNotifier implements Notifier {
     private final String token;
     private final String channel;
     private final String username;
+    private final String iconUrl;
 
-    public SlackNotifier(String token, String channel, String username) {
+    public SlackNotifier(String token, String channel, String username, String iconUrl) {
         this.token = token;
         this.channel = !isBlank(channel) ? channel.replaceFirst("(?!#)", "#") : null;
         this.username = username;
+        this.iconUrl = iconUrl;
     }
 
     @Override
@@ -44,6 +46,7 @@ public class SlackNotifier implements Notifier {
                 .text(text)
                 .channel(channel)
                 .username(username)
+                .iconUrl(iconUrl)
                 .attachments(Collections.singletonList(Attachment.builder()
                         .title(message.link)
                         .titleLink(message.link)

@@ -12,9 +12,12 @@ import static com.github.gmazzo.utils.StringUtils.isBlank;
 
 public class PluginSettings {
     public static final String SETTING_SERVER_BASE_URL = "server_base_url";
+    public static final String SETTING_SERVER_API_USERNAME = "server_api_username";
+    public static final String SETTING_SERVER_API_PASSWORD = "server_api_password";
     public static final String SETTING_SLACK_API_TOKEN = "slack_api_token";
     public static final String SETTING_SLACK_CHANNEL = "slack_channel";
     public static final String SETTING_SLACK_BOT_USERNAME = "slack_bot_username";
+    public static final String SETTING_SLACK_BOT_IMAGE = "slack_bot_image";
     public static final String SETTING_EMAIL_SMTP_SERVER = "email_smtp_server";
     public static final String SETTING_EMAIL_SMTP_PORT = "email_smtp_port";
     public static final String SETTING_EMAIL_SMTP_SSL = "email_smtp_ssl";
@@ -40,6 +43,12 @@ public class PluginSettings {
     @SerializedName(SETTING_SERVER_BASE_URL)
     public String serverBaseUrl = "http://localhost:8153/go/";
 
+    @SerializedName(SETTING_SERVER_API_USERNAME)
+    public String serverAPIUsername;
+
+    @SerializedName(SETTING_SERVER_API_PASSWORD)
+    public String serverAPIPassword;
+
     @SerializedName(SETTING_SLACK_API_TOKEN)
     public String slackAPIToken;
 
@@ -48,6 +57,9 @@ public class PluginSettings {
 
     @SerializedName(SETTING_SLACK_BOT_USERNAME)
     public String slackBotUsername;
+
+    @SerializedName(SETTING_SLACK_BOT_IMAGE)
+    public String slackBotImage;
 
     @SerializedName(SETTING_EMAIL_SMTP_SERVER)
     public String emailSMTPServer = "smtp.gmail.com";
