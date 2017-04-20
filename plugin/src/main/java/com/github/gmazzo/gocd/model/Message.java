@@ -1,5 +1,7 @@
 package com.github.gmazzo.gocd.model;
 
+import com.google.gson.Gson;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +25,11 @@ public class Message {
 
         GOOD, NEUTRAL, BAD
 
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 
     public static class Tag {

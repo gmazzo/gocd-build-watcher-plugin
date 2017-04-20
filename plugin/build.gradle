@@ -1,6 +1,7 @@
 import org.apache.tools.ant.filters.*
 
 apply plugin: 'java'
+apply plugin: 'idea'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
@@ -44,6 +45,12 @@ processResources {
             'author': 'Guillermo Mazzola',
             'go.version': goVersion
     ]
+}
+
+idea {
+    module {
+        testSourceDirs += file("src/integration/java")
+    }
 }
 
 jar {

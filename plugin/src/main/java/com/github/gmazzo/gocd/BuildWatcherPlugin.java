@@ -78,7 +78,7 @@ public class BuildWatcherPlugin implements GoPlugin {
 
     @Override
     public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
-        LOGGER.info("request: name=" + requestMessage.requestName() + ", body:" + requestMessage.requestBody());
+        LOGGER.debug("request: name=" + requestMessage.requestName() + ", body:" + requestMessage.requestBody());
 
         switch (requestMessage.requestName()) {
             case "notifications-interested-in":
@@ -141,8 +141,9 @@ public class BuildWatcherPlugin implements GoPlugin {
         request.setRequestBody(gson.toJson(map("plugin-id", "build-watcher.notifier")));
         GoApiResponse response = accessor.submit(request);
 
-        PluginSettings settings = gson.fromJson(response.responseBody(), PluginSettings.class);
-        return settings != null ? settings : new PluginSettings();
+        LOGGER.info("getSettings: " + response.responseBody());
+
+        return PluginSettings.fromJSON(response.responseBody());
     }
 
     private void handleStageStatus(StageStatus.Pipeline pipeline) {
@@ -241,7 +242,7 @@ public class BuildWatcherPlugin implements GoPlugin {
                     "/pipelines/" + pipeline.name + '/' + pipeline.counter +
                     '/' + pipeline.stage.name + '/' + pipeline.stage.counter;
         }
-        if (message != null) {
+        if (!isBlank(message)) {
             String text = message.replaceAll(PLACEHOLDER_USER, userEmail)
                     .replaceAll(PLACEHOLDER_PIPELINE, pipeline.name)
                     .replaceAll(PLACEHOLDER_PIPELINE_COUNTER, String.valueOf(pipeline.counter))

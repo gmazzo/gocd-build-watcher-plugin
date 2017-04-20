@@ -3,7 +3,7 @@ A GoCD notification plugin which sends direct emails and Slack messages to the p
 Add topics
 
 # Installation
-1. Download the lastest release JAR from jCenter: [download link](https://dl.bintray.com/gmazzo/maven/com/github/gmazzo/gocd/build-watcher-plugin/0.1/build-watcher-plugin-0.1.jar)
+1. Download the lastest release JAR from jCenter: [download link](https://dl.bintray.com/gmazzo/maven/com/github/gmazzo/gocd/build-watcher-plugin/0.2/build-watcher-plugin-0.2.jar)
 1. Drop it under `$GOCD_DIR/plugins/external`
 1. Restart Go Server
 

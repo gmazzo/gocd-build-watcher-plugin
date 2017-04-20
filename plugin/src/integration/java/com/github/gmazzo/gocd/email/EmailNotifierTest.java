@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.util.Date;
 
+import static org.junit.Assert.assertNotNull;
+
 public class EmailNotifierTest {
     private EmailNotifier notifier;
 
@@ -15,8 +17,8 @@ public class EmailNotifierTest {
         String username = System.getenv("GMAIL_ACCOUNT");
         String password = System.getenv("GMAIL_PASSWORD");
 
-        assert username != null : "Missing GMAIL_ACCOUNT environment variable!";
-        assert password != null : "Missing GMAIL_PASSWORD environment variable!";
+        assertNotNull("Missing GMAIL_ACCOUNT environment variable!", username);
+        assertNotNull("Missing GMAIL_PASSWORD environment variable!", password);
 
         notifier = new EmailNotifier("smtp.gmail.com", 465, username, password, true, username, null);
     }

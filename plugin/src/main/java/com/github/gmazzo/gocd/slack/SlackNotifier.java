@@ -9,10 +9,10 @@ import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
 import com.github.seratch.jslack.api.model.Attachment;
 import com.github.seratch.jslack.api.model.Field;
+import com.github.seratch.jslack.api.model.User;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -32,18 +32,20 @@ public class SlackNotifier implements Notifier {
 
     @Override
     public void sendMessage(String userEmail, Message message) {
-        Optional<String> user = detectSlackUser(userEmail);
+        User user = detectSlackUser(userEmail);
 
-        String slackId = user.orElse(userEmail);
-        String title = user.isPresent() ? message.text.replaceAll("\\b" + Pattern.quote(userEmail) + "\\b", slackId) : message.text;
-        String channel = this.channel != null ? this.channel : user.isPresent() ? slackId : "#general";
+        String text = user != null ?
+                message.text.replaceAll("\\b" + Pattern.quote(userEmail) + "\\b", "<@" + user.getName() + ">") :
+                message.text;
+        String channel = this.channel != null ? this.channel : user != null ? "@" + user.getName() : "#general";
 
         checkResponse(() -> slack.methods().chatPostMessage(ChatPostMessageRequest.builder()
                 .token(token)
+                .text(text)
                 .channel(channel)
                 .username(username)
                 .attachments(Collections.singletonList(Attachment.builder()
-                        .title(title)
+                        .title(message.link)
                         .titleLink(message.link)
                         .fields(message.tags.stream()
                                 .map($ -> Field.builder()
@@ -58,12 +60,12 @@ public class SlackNotifier implements Notifier {
                 .build()));
     }
 
-    private Optional<String> detectSlackUser(String userEmail) {
+    private User detectSlackUser(String userEmail) {
         return checkResponse(() -> slack.methods().usersList(UsersListRequest.builder().token(token).build()))
                 .getMembers().stream()
                 .filter(u -> u.getProfile() != null && userEmail.equalsIgnoreCase(u.getProfile().getEmail()))
                 .findAny()
-                .map(u -> "@" + u.getName());
+                .orElse(null);
     }
 
     private <U extends SlackApiResponse> U checkResponse(ApiCall<U> call) {
