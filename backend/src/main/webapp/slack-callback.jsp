@@ -1,6 +1,7 @@
 <html>
     <head>
         <base href="../">
+        <title>GoCD Build Watcher - Slack Integration</title>
         <link rel="stylesheet" href="https://a.slack-edge.com/00dbf/style/plastic_typography.css" />
         <link rel="stylesheet" href="https://a.slack-edge.com/3ea1/style/plastic_forms.css" />
         <link rel="stylesheet" href="https://a.slack-edge.com/a929/style/plastic_layout.css" />
@@ -8,8 +9,8 @@
         <link rel="stylesheet" href="https://a.slack-edge.com/de779/style/plastic_buttons.css" />
         <style>
 
-            #auth-card, img {
-                margin: 10px;
+            .card {
+                display: block;
                 width: 500px;
             }
 
@@ -48,7 +49,7 @@
                 <a href="https://github.com/gmazzo/gocd-build-watcher-plugin#adding-slack-notifications">https://github.com/gmazzo/gocd-build-watcher-plugin#adding-slack-notifications</a>
             </p>
         </div>
-        <img src="static/settings1.png" /><br/>
-        <img src="static/settings2.png" />
+        <img src="static/settings1.png" class="card clearfix large_bottom_padding" />
+        <img src="static/settings2.png" class="card clearfix large_bottom_padding" />
      </body>
 </html>

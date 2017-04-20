@@ -38,6 +38,8 @@ task generateConfiguration { self ->
     processResources.dependsOn self
 
     doFirst {
+        configFile.parentFile.mkdirs()
+
         def props = new Properties()
         props.put("slack-app.clientId", slackClientId)
         props.put("slack-app.clientSecret", slackClientSecret)
