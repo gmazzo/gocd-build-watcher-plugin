@@ -11,6 +11,18 @@ def repoDesc = 'A plugin which sends direct emails and Slack messages to the per
 def repoUrl = "https://github.com/gmazzo/$repoName"
 def repoTags = ['go', 'go-cd', 'plugin', 'slack', 'email']
 
+sourceSets {
+    integration {
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+configurations {
+    integrationCompile.extendsFrom testCompile
+    integrationRuntime.extendsFrom testRuntime
+}
+
 dependencies {
     compile 'com.github.seratch:jslack:1.0.8'
     compile 'org.apache.commons:commons-email:1.4'
@@ -72,6 +84,11 @@ install {
             }
         }
     }
+}
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integration.output.classesDir
+    classpath = sourceSets.integration.runtimeClasspath
 }
 
 task sourcesJar(type: Jar) {

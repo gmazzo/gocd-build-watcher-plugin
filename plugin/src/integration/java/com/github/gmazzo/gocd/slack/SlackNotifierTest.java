@@ -15,6 +15,8 @@ public class SlackNotifierTest {
     public void setUp() {
         String token = System.getenv("SLACK_API_TOKEN");
 
+        assert token != null : "Missing SLACK_API_TOKEN environment variable!";
+
         directNotifier = new SlackNotifier(token, null, null);
         channelNotifier = new SlackNotifier(token, "#random", null);
     }

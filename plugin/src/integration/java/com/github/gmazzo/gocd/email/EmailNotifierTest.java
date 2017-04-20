@@ -15,6 +15,9 @@ public class EmailNotifierTest {
         String username = System.getenv("GMAIL_ACCOUNT");
         String password = System.getenv("GMAIL_PASSWORD");
 
+        assert username != null : "Missing GMAIL_ACCOUNT environment variable!";
+        assert password != null : "Missing GMAIL_PASSWORD environment variable!";
+
         notifier = new EmailNotifier("smtp.gmail.com", 465, username, password, true, username, null);
     }
 
