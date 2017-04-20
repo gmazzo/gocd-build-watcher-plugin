@@ -1,6 +1,14 @@
 package com.github.gmazzo.gocd.model.api;
 
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+
+import java.io.IOException;
+
+import static com.github.gmazzo.utils.StringUtils.isBlank;
 
 public class PluginSettings {
     public static final String SETTING_SERVER_BASE_URL = "server_base_url";
@@ -44,9 +52,11 @@ public class PluginSettings {
     @SerializedName(SETTING_EMAIL_SMTP_SERVER)
     public String emailSMTPServer = "smtp.gmail.com";
 
+    @JsonAdapter(SafeNumberTypeAdapter.class)
     @SerializedName(SETTING_EMAIL_SMTP_PORT)
     public int emailSMTPPort = 465;
 
+    @JsonAdapter(SafeBooleanTypeAdapter.class)
     @SerializedName(SETTING_EMAIL_SMTP_SSL)
     public boolean emailSMTPSSL = true;
 
@@ -70,5 +80,35 @@ public class PluginSettings {
 
     @SerializedName(SETTING_MESSAGE_PIPE_FIXED)
     public String messagePipeFixed = "Great job " + PLACEHOLDER_USER + "! The pipeline " + PLACEHOLDER_PIPELINE_ID + " has been fixed";
+
+}
+
+class SafeNumberTypeAdapter extends TypeAdapter<Double> {
+
+    @Override
+    public void write(JsonWriter out, Double value) throws IOException {
+        out.value(value);
+    }
+
+    @Override
+    public Double read(JsonReader in) throws IOException {
+        String value = in.nextString();
+        return isBlank(value) ? null : Double.parseDouble(value);
+    }
+
+}
+
+class SafeBooleanTypeAdapter extends TypeAdapter<Boolean> {
+
+    @Override
+    public void write(JsonWriter out, Boolean value) throws IOException {
+        out.value(value);
+    }
+
+    @Override
+    public Boolean read(JsonReader in) throws IOException {
+        String value = in.nextString();
+        return isBlank(value) ? null : Boolean.parseBoolean(value);
+    }
 
 }

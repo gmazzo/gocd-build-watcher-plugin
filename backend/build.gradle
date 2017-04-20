@@ -1,0 +1,40 @@
+apply plugin: 'war'
+apply plugin: 'appengine'
+
+project.sourceCompatibility = JavaVersion.VERSION_1_7
+project.targetCompatibility = JavaVersion.VERSION_1_7
+
+dependencies {
+    appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.49'
+
+    compileOnly 'javax.servlet:servlet-api:2.5'
+
+    compile 'com.google.code.gson:gson:2.8.0'
+}
+
+appengine {
+    downloadSdk = true
+    httpPort = 8888
+    appcfg {
+        oauth2 = true
+        email = 'gmazzo65@gmail.com'
+        httpAddress '0.0.0.0'
+    }
+}
+
+task generateConfiguration { self ->
+    def slackClientId = System.getenv('SLACK_CLIENT_ID') ?: '170776918258.170870737557';
+    def slackClientSecret = System.getenv('SLACK_CLIENT_SECRET') ?: '28aff643f757b3a36be85dd835689f15';
+    def configFile = file("$buildDir/resources/main/config.properties")
+
+    inputs.property slackClientId, slackClientSecret
+    outputs.file configFile
+    processResources.dependsOn self
+
+    doFirst {
+        def props = new Properties()
+        props.put("slack-app.clientId", slackClientId)
+        props.put("slack-app.clientSecret", slackClientSecret)
+        props.store(configFile.newOutputStream(), null)
+    }
+}

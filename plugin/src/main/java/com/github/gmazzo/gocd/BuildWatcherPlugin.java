@@ -107,20 +107,9 @@ public class BuildWatcherPlugin implements GoPlugin {
 
                 List<Map<String, String>> errors = new LinkedList<>();
 
-                // Messages validation
-                if (isBlank(configuration.get(SETTING_MESSAGE_PIPE_BROKEN))) {
-                    errors.add(map("key", SETTING_MESSAGE_PIPE_BROKEN, "message", "This message is required"));
-                }
-                if (isBlank(configuration.get(SETTING_MESSAGE_PIPE_STILL_BROKEN))) {
-                    errors.add(map("key", SETTING_MESSAGE_PIPE_STILL_BROKEN, "message", "This message is required"));
-                }
-                if (isBlank(configuration.get(SETTING_MESSAGE_PIPE_FIXED))) {
-                    errors.add(map("key", SETTING_MESSAGE_PIPE_FIXED, "message", "This message is required"));
-                }
-
                 // Email validation
-                if (!isBlank(configuration.get(SETTING_EMAIL_SMTP_SERVER)) && !isBlank(configuration.get(SETTING_EMAIL_SMTP_PORT))) {
-                    errors.add(map("key", SETTING_EMAIL_SMTP_PORT, "message", "The field From is required"));
+                if (!isBlank(configuration.get(SETTING_EMAIL_SMTP_SERVER)) && isBlank(configuration.get(SETTING_EMAIL_FROM))) {
+                    errors.add(map("key", SETTING_EMAIL_FROM, "message", "The field From is required"));
                 }
 
                 return response(errors);

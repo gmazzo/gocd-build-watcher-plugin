@@ -17,7 +17,7 @@
 <fieldset class="form_item_block">
     <label>Slack</label>
     <div class="form_item_block">
-        <a href="https://slack.com/oauth/authorize?&client_id=170776918258.170870737557&scope=chat:write:bot,users:read.email,users:read"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
+        <a href="https://slack.com/oauth/authorize?&client_id=170776918258.170870737557&scope=chat:write:bot,users:read.email,users:read" target="_blank"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
     </div>
     <div class="form_item_block">
         <label>OAuth Access Token:<span class="asterisk">*</span></label>
@@ -72,6 +72,8 @@
         <label>CCs:</label>
         <input type="text" ng-model="email_cc" ng-required="false"/>
         <span class="form_error" ng-show="GOINPUTNAME[email_cc].$error.server">{{ GOINPUTNAME[email_cc].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
         use ',' for multiple destinations
     </div>
 </fieldset>
