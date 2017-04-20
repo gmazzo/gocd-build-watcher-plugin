@@ -16,10 +16,10 @@ If you are enforced to login before you can access the main pipelines screen, yo
 ### Adding Slack notifications
 As this pluging needs to resolve user's email into a Slack ID, a *WebHook* is not enough to work.
 You need to install our Slack App into your team and get an API token.
-> ![Profile Warning](static/profile-warning.png)
+> ![Profile Warning](static/profile-warning.png)<br>
 > You may see this warning when authorizing our app to work with your team.
 > We will only access your team profile in order to match a email from a Material change into a Slack ID
-1. Install our app into your team: [![Add to Slack](https://platform.slack-edge.com/img/add_to_slack.png)](https://slack.com/oauth/authorize?&client_id=170776918258.170870737557&scope=chat:write:bot,users:read.email,users:read)
+1. Install our app into your team: <br>[![Add to Slack](https://platform.slack-edge.com/img/add_to_slack.png)](https://slack.com/oauth/authorize?&client_id=170776918258.170870737557&scope=chat:write:bot,users:read.email,users:read)
 2. Copy your Slack API Token into GoCD's plugin configuration
 3. (optional) Configure a custom channel or slack id for the bot.
 
