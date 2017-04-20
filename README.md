@@ -1,5 +1,5 @@
 # gocd-build-watcher-plugin
-A GoCD notification plugin which sends direct emails and Slack messages to the person who brakes a build
+A GoCD notification plugin which sends direct emails and Slack messages to the person who breaks a build
 ![Screenshot Fail](static/screenshot-fail.png) ![Screenshot Fixed](static/screenshot-fixed.png)
 
 # Installation

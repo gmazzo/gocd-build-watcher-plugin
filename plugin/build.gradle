@@ -8,7 +8,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 def goVersion = '16.3.0'
 
 def repoName = 'gocd-build-watcher-plugin'
-def repoDesc = 'A plugin which sends direct emails and Slack messages to the person who brakes a build'
+def repoDesc = 'A GoCD notification plugin which sends direct emails and Slack messages to the person who breaks a build'
 def repoUrl = "https://github.com/gmazzo/$repoName"
 def repoTags = ['go', 'go-cd', 'plugin', 'slack', 'email']
 
