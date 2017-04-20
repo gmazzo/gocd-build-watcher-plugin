@@ -25,6 +25,7 @@ You need to install our Slack App into your team and get an API token.
 
 ![Settings 1](static/settings1.png)
 ![Settings 2](static/settings2.png)
+![Settings 3](static/settings3.png)
 
 ### Adding Email notifications
 1. Configure your SMTP server details
