@@ -12,6 +12,12 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
 }
 
+war {
+    from ("${rootDir}/static") {
+        into('static')
+    }
+}
+
 appengine {
     downloadSdk = true
     httpPort = 8888
