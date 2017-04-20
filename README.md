@@ -17,6 +17,7 @@ You need to install our Slack App into your team and get an API token.
 1. Install our app into your team: [![Add to Slack](https://platform.slack-edge.com/img/add_to_slack.png)](https://slack.com/oauth/authorize?&client_id=170776918258.170870737557&scope=chat:write:bot,users:read.email,users:read)
 2. Copy your Slack API Token into GoCD's plugin configuration
 3. (optional) Configure a custom channel or slack id for the bot.
+
 ![Settings 1](static/settings1.png)
 ![Settings 2](static/settings2.png)
 
