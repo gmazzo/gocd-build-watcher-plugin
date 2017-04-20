@@ -15,5 +15,5 @@ allprojects {
     }
 
     group = 'com.github.gmazzo.gocd'
-    version = '0.3'
+    version = '0.4'
 }

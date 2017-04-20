@@ -8,6 +8,11 @@
         font-weight: bold;
     }
 
+    .hint, .hint code {
+        clear: both;
+        font-size: 100%;
+    }
+
 </style>
 <div class="form_item_block">
     <label>Server Base URL:</label>
@@ -26,9 +31,7 @@
 </div>
 <fieldset class="form_item_block">
     <label>Slack</label>
-    <div class="form_item_block">
-        <a href="https://slack.com/oauth/authorize?&client_id=170776918258.170870737557&scope=chat:write:bot,users:read.email,users:read" target="_blank"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
-    </div>
+    <a class="hint" href="https://slack.com/oauth/authorize?&client_id=170776918258.170870737557&scope=chat:write:bot,users:read.email,users:read" target="_blank"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
     <div class="form_item_block">
         <label>OAuth Access Token:<span class="asterisk">*</span></label>
         <input type="password" ng-model="slack_api_token" ng-required="true"/>
@@ -38,11 +41,17 @@
         <label>Channel (none for direct messages):</label>
         <input type="text" ng-model="slack_channel" ng-required="false" placeholder="#general"/>
         <span class="form_error" ng-show="GOINPUTNAME[slack_channel].$error.server">{{ GOINPUTNAME[slack_channel].$error.server }}</span>
+        <p class="hint">Make sure to add the prefix '#' to target a channel</p>
     </div>
     <div class="form_item_block">
         <label>Bot username:</label>
         <input type="text" ng-model="slack_bot_username" ng-required="false"/>
         <span class="form_error" ng-show="GOINPUTNAME[slack_bot_username].$error.server">{{ GOINPUTNAME[slack_bot_username].$error.server }}</span>
+    </div>
+    <div class="form_item_block">
+        <label>Bot image:</label>
+        <input type="text" ng-model="slack_bot_image" ng-required="false"/>
+        <span class="form_error" ng-show="GOINPUTNAME[slack_bot_image].$error.server">{{ GOINPUTNAME[slack_bot_image].$error.server }}</span>
     </div>
 </fieldset>
 <br/>
@@ -82,9 +91,7 @@
         <label>CCs:</label>
         <input type="text" ng-model="email_cc" ng-required="false"/>
         <span class="form_error" ng-show="GOINPUTNAME[email_cc].$error.server">{{ GOINPUTNAME[email_cc].$error.server }}</span>
-    </div>
-    <div class="form_item_block">
-        use ',' for multiple destinations
+        <p class="hint">use ',' for multiple destinations</p>
     </div>
 </fieldset>
 <br/>
@@ -104,16 +111,16 @@
         <label>Pipeline Fixed:<span class="asterisk">*</span></label>
         <input type="text" ng-model="message_pipe_fixed" ng-required="true"/>
         <span class="form_error" ng-show="GOINPUTNAME[message_pipe_fixed].$error.server">{{ GOINPUTNAME[message_pipe_fixed].$error.server }}</span>
-    </div>
-    <div class="form_item_block">
-        <label>You can use the following placeholders in the message:</label>
-        <label><code>@user@</code>: the last commit username in the material</label>
-        <label><code>@pipeline@</code>: the pipeline name</label>
-        <label><code>@pipeline-counter@</code>: the pipeline current run counter</label>
-        <label><code>@stage@</code>: the stage name</label>
-        <label><code>@stage-counter@</code>: the stage current run counter</label>
-        <label><code>@label@</code>: the current run label</label>
-        <label><code>@current-state@</code>: the current run state</label>
-        <label><code>@previous-state@</code>: the previous run state</label>
+        <p class="hint">
+            You can use the following placeholders in the message:<br/>
+            <code>@user@</code>: the last commit username in the material<br/>
+            <code>@pipeline@</code>: the pipeline name<br/>
+            <code>@pipeline-counter@</code>: the pipeline current run counter<br/>
+            <code>@stage@</code>: the stage name<br/>
+            <code>@stage-counter@</code>: the stage current run counter<br/>
+            <code>@label@</code>: the current run label<br/>
+            <code>@current-state@</code>: the current run state<br/>
+            <code>@previous-state@</code>: the previous run state<br/>
+        </p>
     </div>
 </fieldset>

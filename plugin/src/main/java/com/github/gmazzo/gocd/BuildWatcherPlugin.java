@@ -150,7 +150,7 @@ public class BuildWatcherPlugin implements GoPlugin {
         request.setRequestBody(gson.toJson(map("plugin-id", "build-watcher.notifier")));
         GoApiResponse response = accessor.submit(request);
 
-        LOGGER.info("getSettings: " + response.responseBody());
+        LOGGER.debug("getSettings: " + response.responseBody());
 
         return PluginSettings.fromJSON(response.responseBody());
     }
