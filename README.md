@@ -1,6 +1,7 @@
 # gocd-build-watcher-plugin
 A GoCD notification plugin which sends direct emails and Slack messages to the person who brakes a build Edit
 Add topics
+![Screenshot Fail](static/screenshot-fail.png) ![Screenshot Fixed](static/screenshot-fixed.png)
 
 # Installation
 1. Download the lastest release JAR from jCenter: [download link](https://dl.bintray.com/gmazzo/maven/com/github/gmazzo/gocd/build-watcher-plugin/0.2/build-watcher-plugin-0.2.jar)
