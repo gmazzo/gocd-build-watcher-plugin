@@ -180,7 +180,7 @@ public class BuildWatcherPlugin implements GoPlugin {
                     } catch (Exception e) {
                         LOGGER.error("sendMessage failed: notifier=" + n +
                                 ", userEmail=" + userEmail + ", current=" + currentResult +
-                                ", previous=" + previousResult + ", message=" + message);
+                                ", previous=" + previousResult + ", message=" + message, e);
                     }
                 });
             }
