@@ -2,7 +2,7 @@
 GO_SERVER_DIR=~/Library/Application\ Support/Go\ Server
 LOG_FILE="$GO_SERVER_DIR/logs/go-server.log"
 ARTIFACT_NAME=build-watcher-plugin
-ARTIFACT_FILE="plugin/build/libs/$ARTIFACT_NAME-0.4.jar"
+ARTIFACT_FILE="plugin/build/libs/$ARTIFACT_NAME-0.5.jar"
 
 pkill -f "Go Server"
 ./gradlew ":$ARTIFACT_NAME:build" "$@" && \
