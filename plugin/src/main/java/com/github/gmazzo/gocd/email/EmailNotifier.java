@@ -62,7 +62,7 @@ public class EmailNotifier implements Notifier {
         StringBuilder tags = new StringBuilder();
 
         boolean col2 = false;
-        int rowSpan = 2;
+        int rowSpan = 1;
         for (Message.Tag tag : message.tags) {
             col2 |= !tag.isShort;
             if (col2) {
@@ -82,26 +82,26 @@ public class EmailNotifier implements Notifier {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("<table><tr><td rowSpan=\"");
-        sb.append(rowSpan);
+        sb.append("<table><tr><td colSpan=\"3\">");
+        sb.append(escapeHtml3(message.text));
+        sb.append("</td></tr><tr><td rowSpan=\"");
+        sb.append(rowSpan + (message.link != null ? 1 : 0));
         sb.append("\" style=\"background-color: ");
         sb.append(message.type == Message.Type.GOOD ? "#36a64f" :
                 message.type == Message.Type.BAD ? "#d00000" : "#E8E8E8");
-        sb.append(";\" width=\"1\">&nbsp;</td><td colSpan=\"2\">");
+        sb.append(";\" width=\"1\"></td>");
         if (message.link != null) {
-            sb.append("<a href=\"");
+            sb.append("<td colSpan=\"2\"><a href=\"");
             sb.append(message.link);
             sb.append("\">");
-            sb.append(escapeHtml3(message.text));
-            sb.append("</a>");
-        } else {
-            sb.append(escapeHtml3(message.text));
+            sb.append(escapeHtml3(message.link));
+            sb.append("</a></td>");
         }
-        sb.append("</td></tr>");
+        sb.append("</tr>");
         if (tags.length() > 0) {
             sb.append("<tr>");
             sb.append(tags);
-            sb.append("<tr/>");
+            sb.append("</tr>");
         }
         sb.append("</table>");
         return sb.toString();
