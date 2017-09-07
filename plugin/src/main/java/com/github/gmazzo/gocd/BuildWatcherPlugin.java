@@ -187,7 +187,7 @@ public class BuildWatcherPlugin implements GoPlugin {
 
         } else {
             LOGGER.info("Ignoring non final state: stage=" +
-                    pipeline.name + '/' + pipeline.stage.name + ", stage=" + pipeline.stage.result);
+                    pipeline.name + '/' + pipeline.stage.name + ", state=" + pipeline.stage.result);
         }
     }
 
