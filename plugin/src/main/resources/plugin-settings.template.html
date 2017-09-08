@@ -39,7 +39,7 @@
     </div>
     <div class="form_item_block">
         <label>Channel (none for direct messages):</label>
-        <input type="text" ng-model="slack_channel" ng-required="false" placeholder="#general"/>
+        <input type="text" ng-model="slack_channel" ng-required="false"/>
         <span class="form_error" ng-show="GOINPUTNAME[slack_channel].$error.server">{{ GOINPUTNAME[slack_channel].$error.server }}</span>
         <p class="hint">Make sure to add the prefix '#' to target a channel</p>
     </div>

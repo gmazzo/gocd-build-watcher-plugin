@@ -53,7 +53,7 @@ public class PluginSettings {
     public String slackAPIToken;
 
     @SerializedName(SETTING_SLACK_CHANNEL)
-    public String slackChannel = "#general";
+    public String slackChannel;
 
     @SerializedName(SETTING_SLACK_BOT_USERNAME)
     public String slackBotUsername;
