@@ -28,7 +28,7 @@ You need to install our Slack App into your team and get an API token.
 > We will only access your team profile in order to match a email from a Material change into a Slack ID
 1. Install our app into your team: <br>[![Add to Slack](https://platform.slack-edge.com/img/add_to_slack.png)](https://slack.com/oauth/authorize?&client_id=170776918258.170870737557&scope=chat:write:bot,users:read.email,users:read)
 2. Copy your Slack API Token into GoCD's plugin configuration
-3. (optional) Configure a custom channel or slack id for the bot. Enter [plugin settings](#access-go-server-api) and then:
+3. (optional) Configure a custom channel or slack id for the bot. If a channel is set, messages will still @mention a user. If not set, commits with an author that can't be resolved to a user in Slack will be posted to #general by default. Enter [plugin settings](#access-go-server-api) and then:
 ![Settings 4](static/settings4.png)
 
 ### Adding Email notifications
