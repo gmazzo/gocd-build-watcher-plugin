@@ -1,5 +1,6 @@
 package com.github.gmazzo.utils;
 
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +18,20 @@ public final class StringUtils {
     public static String extractEmail(String text) {
         Matcher m = EMAIL_PATTERN.matcher(text);
         return m.find() ? m.group() : null;
+    }
+
+    public static HashMap<String, String> extractPipelineAndCounter(String text) {
+        String[] parts = text.split("/");
+
+        if (parts.length < 2) {
+            return null;
+        }
+
+        HashMap<String, String> res = new HashMap<>();
+        res.put("pipeline", parts[0]);
+        res.put("counter", parts[1]);
+
+        return res;
     }
 
 }
