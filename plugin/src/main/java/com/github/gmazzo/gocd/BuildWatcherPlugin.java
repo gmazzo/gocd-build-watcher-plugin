@@ -2,11 +2,7 @@ package com.github.gmazzo.gocd;
 
 import com.github.gmazzo.gocd.email.EmailNotifier;
 import com.github.gmazzo.gocd.model.Message;
-import com.github.gmazzo.gocd.model.api.PipelineInstance;
-import com.github.gmazzo.gocd.model.api.PluginSettings;
-import com.github.gmazzo.gocd.model.api.StageResult;
-import com.github.gmazzo.gocd.model.api.StageStatus;
-import com.github.gmazzo.gocd.model.api.ValidateConfiguration;
+import com.github.gmazzo.gocd.model.api.*;
 import com.github.gmazzo.gocd.slack.SlackNotifier;
 import com.google.gson.Gson;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
@@ -20,50 +16,20 @@ import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.DatatypeConverter;
-
-import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_LABEL;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_PIPELINE;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_PIPELINE_COUNTER;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_STAGE;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_STAGE_COUNTER;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_STATE_CURRENT;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_STATE_PREVIOUS;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.PLACEHOLDER_USER;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_AUTH_PASSWORD;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_AUTH_USER;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_CC;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_FROM;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_SMTP_PORT;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_SMTP_SERVER;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_EMAIL_SMTP_SSL;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_MESSAGE_PIPE_BROKEN;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_MESSAGE_PIPE_FIXED;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_MESSAGE_PIPE_STILL_BROKEN;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SERVER_API_PASSWORD;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SERVER_API_USERNAME;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SERVER_BASE_URL;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SLACK_API_TOKEN;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SLACK_BOT_IMAGE;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SLACK_BOT_USERNAME;
-import static com.github.gmazzo.gocd.model.api.PluginSettings.SETTING_SLACK_CHANNEL;
+import static com.github.gmazzo.gocd.model.api.PluginSettings.*;
 import static com.github.gmazzo.utils.HttpUtils.response;
 import static com.github.gmazzo.utils.IOUtils.readStream;
 import static com.github.gmazzo.utils.MapUtils.map;
-import static com.github.gmazzo.utils.StringUtils.capitalize;
-import static com.github.gmazzo.utils.StringUtils.extractEmail;
-import static com.github.gmazzo.utils.StringUtils.isBlank;
+import static com.github.gmazzo.utils.StringUtils.*;
+import static java.lang.Integer.parseInt;
 
 @Extension
 public class BuildWatcherPlugin implements GoPlugin {
@@ -160,30 +126,41 @@ public class BuildWatcherPlugin implements GoPlugin {
 
         StageResult currentResult = pipeline.stage.result;
 
+        LOGGER.info("Starting execution of the handleStageStatus() method");
+
         if (currentResult.isFinal()) {
             PipelineInstance currentInstance = getPipelineInstance(settings, pipeline.name, pipeline.counter);
             PipelineInstance previousInstance = getPipelineInstance(settings, pipeline.name, pipeline.counter - 1);
             StageResult previousResult = getPreviousStageResult(previousInstance, pipeline.stage.name);
-            String userEmail = getMaterialUser(currentInstance);
+
+            Set<String> users = new LinkedHashSet<>();
+            relevantMaterialRevisions(currentInstance).forEach(
+                    $ -> users.addAll(getMaterialUsers($.modifications))
+            );
+            LOGGER.info("Number of users found: " + users.size());
+
             String changesResume = getChangesResume(currentInstance);
-            Message message = getMessage(settings, userEmail, pipeline, currentResult, previousResult, changesResume);
 
-            LOGGER.info("handleStageStatus: userEmail=" + userEmail + ", current=" + currentResult +
-                    ", previous=" + previousResult + ", message=" + message);
+            users.forEach(userEmail -> {
+                LOGGER.info("userEmail: " + userEmail);
 
-            if (message != null) {
-                // sends the notification
-                getNotifiers(settings).forEach(n -> {
-                    try {
-                        n.sendMessage(userEmail, message);
+                Message message = getMessage(settings, userEmail, pipeline, currentResult, previousResult, changesResume);
+                LOGGER.info("handleStageStatus: userEmail=" + userEmail + ", current=" + currentResult +
+                        ", previous=" + previousResult + ", message=" + message);
+                if (message != null) {
+                    // sends the notification
+                    getNotifiers(settings).forEach(n -> {
+                        try {
+                            n.sendMessage(userEmail, message);
 
-                    } catch (Exception e) {
-                        LOGGER.error("sendMessage failed: notifier=" + n +
-                                ", userEmail=" + userEmail + ", current=" + currentResult +
-                                ", previous=" + previousResult + ", message=" + message, e);
-                    }
-                });
-            }
+                        } catch (Exception e) {
+                            LOGGER.error("sendMessage failed: notifier=" + n +
+                                    ", userEmail=" + userEmail + ", current=" + currentResult +
+                                    ", previous=" + previousResult + ", message=" + message, e);
+                        }
+                    });
+                }
+            });
 
         } else {
             LOGGER.info("Ignoring non final state: stage=" +
@@ -212,14 +189,51 @@ public class BuildWatcherPlugin implements GoPlugin {
         }
     }
 
-    private String getMaterialUser(PipelineInstance instance) {
-        return instance.buildCause.revisions.stream()
-                .flatMap(m -> m.modifications.stream())
-                .sorted((a, b) -> -Long.compare(a.modifiedTime, b.modifiedTime))
-                .findFirst()
+    private List<PipelineInstance.MaterialRevision> relevantMaterialRevisions(PipelineInstance instance) {
+        Map<Boolean, List<PipelineInstance.MaterialRevision>> materialRevisions = instance.buildCause.revisions.stream()
+                .collect(Collectors.partitioningBy(r -> Objects.equals(r.material.type, "Pipeline")));
+
+        LOGGER.info("Starting execution of the relevantMaterialRevisions() method");
+
+        LOGGER.info("Printing out all relevant material revisions...");
+
+        LOGGER.info("Printing out type: pipeline...");
+        materialRevisions.get(true).forEach(m -> LOGGER.info(m.material.fingerprint));
+
+        LOGGER.info("Printing out type: !pipeline...");
+        materialRevisions.get(false).forEach(m -> LOGGER.info(m.material.fingerprint));
+
+        List<PipelineInstance.MaterialRevision> res = new LinkedList<>(materialRevisions.get(false));
+
+        if (materialRevisions.get(false).size() == 0 && materialRevisions.get(true).size() > 0) {
+            LOGGER.info("Only able to find pipeline material revisions, processing parents...");
+
+            materialRevisions.get(true)
+                    .forEach(
+                            $ -> getPipelinesFromModifications($).forEach(p -> res.addAll(relevantMaterialRevisions(p)))
+                    );
+        }
+
+        return res;
+    }
+
+    private List<PipelineInstance> getPipelinesFromModifications(PipelineInstance.MaterialRevision materialRevision) {
+        PluginSettings settings = getSettings();
+
+        return materialRevision.modifications.stream()
+                .filter($ -> !Objects.equals($.revision, ""))
+                .map($ -> extractPipelineAndCounter($.revision))
+                .filter(Objects::nonNull)
+                .map($ -> getPipelineInstance(settings, $.get("pipeline"), parseInt($.get("counter"))))
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getMaterialUsers(List<PipelineInstance.Modification> modifications) {
+        return modifications.stream()
+                .filter(m -> m.emailAddress != null || m.userName != null)
                 .map(m -> m.emailAddress != null ? m.emailAddress : extractEmail(m.userName))
-                .filter($ -> $ != null)
-                .orElseThrow(() -> new IllegalArgumentException("No modifications found for material!"));
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private StageResult getPreviousStageResult(PipelineInstance instance, String stage) {
@@ -233,7 +247,7 @@ public class BuildWatcherPlugin implements GoPlugin {
     private String getChangesResume(PipelineInstance instance) {
         return instance.buildCause.revisions.stream()
                 .flatMap($ -> $.modifications.stream())
-                .map($ -> $.revision + ":\n" + $.comment + " - " + $.userName)
+                .map($ -> "Material changed:\n\tRevision: " + $.revision + ($.comment != null ? "\n\tComment: " + $.comment : "") + ($.userName != null ? "\n\tUsername: " + $.userName : ""))
                 .collect(Collectors.joining("\n\n"));
     }
 
@@ -262,7 +276,7 @@ public class BuildWatcherPlugin implements GoPlugin {
                     '/' + pipeline.stage.name + '/' + pipeline.stage.counter;
         }
         if (!isBlank(message)) {
-            String text = message.replaceAll(PLACEHOLDER_USER, userEmail)
+            String text = "\n" + message.replaceAll(PLACEHOLDER_USER, userEmail)
                     .replaceAll(PLACEHOLDER_PIPELINE, pipeline.name)
                     .replaceAll(PLACEHOLDER_PIPELINE_COUNTER, String.valueOf(pipeline.counter))
                     .replaceAll(PLACEHOLDER_STAGE, pipeline.stage.name)

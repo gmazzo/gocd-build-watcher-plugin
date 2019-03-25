@@ -21,9 +21,28 @@ public class PipelineInstance {
 
     public static class MaterialRevision {
 
+        @SerializedName("material")
+        public Material material;
+
         @SerializedName("modifications")
         public List<Modification> modifications;
 
+        @SerializedName("changed")
+        public boolean changed;
+    }
+
+    public static class Material {
+        @SerializedName("fingerprint")
+        public String fingerprint;
+
+        @SerializedName("description")
+        public String description;
+
+        @SerializedName("id")
+        public Integer id;
+
+        @SerializedName("type")
+        public String type;
     }
 
     public static class Modification {

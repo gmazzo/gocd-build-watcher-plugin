@@ -61,30 +61,25 @@ public class EmailNotifier implements Notifier {
     private String buildHtml(Message message) {
         StringBuilder tags = new StringBuilder();
 
-        boolean col2 = false;
         int rowSpan = 1;
         for (Message.Tag tag : message.tags) {
-            col2 |= !tag.isShort;
-            if (col2) {
+            if (rowSpan > 1) {
                 tags.append("</tr><tr>");
-                rowSpan++;
-                col2 = !tag.isShort;
-
-            } else {
-                col2 = true;
             }
 
             tags.append("<td width=\"100\"><b>");
             tags.append(escapeHtml3(tag.name));
             tags.append("</b><br/>");
-            tags.append(escapeHtml3(tag.value));
+            tags.append(escapeHtml3(tag.value).replace("\n", "<br/>").replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
             tags.append("</td>");
+
+            rowSpan++;
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("<table><tr><td colSpan=\"3\">");
+        sb.append("<table style=\"width: 100%;\"><tr><td colSpan=\"3\">");
         sb.append(escapeHtml3(message.text));
-        sb.append("</td></tr><tr><td rowSpan=\"");
+        sb.append("</td></tr><tr><td colSpan=\"3\">&nbsp;</td></tr><tr><td rowSpan=\"");
         sb.append(rowSpan + (message.link != null ? 1 : 0));
         sb.append("\" style=\"background-color: ");
         sb.append(message.type == Message.Type.GOOD ? "#36a64f" :
