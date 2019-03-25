@@ -1,4 +1,4 @@
-import org.apache.tools.ant.filters.*
+import org.apache.tools.ant.filters.ReplaceTokens
 
 apply plugin: 'java'
 apply plugin: 'idea'
@@ -37,13 +37,13 @@ dependencies {
 
 processResources {
     filter ReplaceTokens, tokens: [
-            'plugin.id': 'build-watcher.notifier',
-            'project.name': 'Build-Watcher Notification Plugin',
+            'plugin.id'          : 'build-watcher.notifier',
+            'project.name'       : 'Build-Watcher Notification Plugin',
             'project.description': repoDesc,
-            'project.version': project.version,
-            'repo.url': repoUrl.toString(),
-            'author': 'Guillermo Mazzola',
-            'go.version': goVersion
+            'project.version'    : project.version,
+            'repo.url'           : repoUrl.toString(),
+            'author'             : 'Guillermo Mazzola',
+            'go.version'         : goVersion
     ]
 }
 
@@ -112,3 +112,5 @@ artifacts {
     archives javadocJar
     archives sourcesJar
 }
+
+task publish(dependsOn: bintrayUpload)
