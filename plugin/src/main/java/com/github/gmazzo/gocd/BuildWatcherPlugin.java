@@ -16,7 +16,6 @@ import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -171,7 +170,7 @@ public class BuildWatcherPlugin implements GoPlugin {
     private URLConnection fillAPIAuth(URLConnection connection, PluginSettings settings) {
         if (!isBlank(settings.serverAPIUsername) && !isBlank(settings.serverAPIPassword)) {
             String userpass = settings.serverAPIUsername + ":" + settings.serverAPIPassword;
-            String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(userpass.getBytes());
+            String basicAuth = "Basic " + Base64.getEncoder().encodeToString(userpass.getBytes());
             connection.setRequestProperty("Authorization", basicAuth);
         }
         return connection;
